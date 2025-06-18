@@ -6,7 +6,7 @@ import joblib
 model = joblib.load("mentalhealth_model.pkl")
 scaler = joblib.load("scaler.pkl")
 
-st.title("Prediksi Gangguan Kesehatan Mental")
+st.title("Prediksi Gangguan Kesehatan Mental Mahasiswa")
 
 with st.form("mental_health_form"):
     st.header("Masukkan data responden:")
@@ -14,16 +14,19 @@ with st.form("mental_health_form"):
     gender = st.selectbox("Jenis Kelamin", ["Laki-laki", "Perempuan"])
     age = st.number_input("Usia", min_value=10, max_value=100, step=1)
     cgpa = st.number_input("IPK", min_value=0.0, max_value=4.0, format="%.2f")
-    sleep_quality = st.slider("Kualitas Tidur (1 = Buruk, 5 = Sangat Baik)", 1, 5)
-    academic_pressure = st.slider("Tekanan Akademik (1 = Rendah, 5 = Tinggi)", 1, 5)
-    social_support = st.slider("Dukungan Sosial (1 = Lemah, 5 = Kuat)", 1, 5)
-    phone_usage = st.number_input("Jam Penggunaan HP per Hari", min_value=0.0, max_value=24.0, format="%.1f")
+    sleep_quality = st.slider("Kualitas Tidur (1-5)", 1, 5)
+    academic_pressure = st.slider("Tekanan Akademik (1-5)", 1, 5)
+    social_support = st.slider("Dukungan Sosial (1-5)", 1, 5)
+    phone_usage = st.number_input("Rata-rata Penggunaan HP per Hari (jam)", min_value=0.0, max_value=24.0)
 
     submit = st.form_submit_button("Prediksi")
 
 if submit:
     gender_num = 1 if gender.lower() == "laki-laki" else 0
-    features = np.array([[gender_num, age, cgpa, sleep_quality, academic_pressure, social_support, phone_usage]])
+
+    features = np.array([[
+        gender_num, age, cgpa, sleep_quality, academic_pressure, social_support, phone_usage
+    ]])
 
     features_scaled = scaler.transform(features)
     prediction = model.predict(features_scaled)[0]
