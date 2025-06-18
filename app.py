@@ -2,8 +2,9 @@ import streamlit as st
 import numpy as np
 import joblib
 
-# Load model yang sudah dilatih dari notebook
-model = joblib.load("mentalhealth_model.pkl")  # pastikan file ini hasil dump dari notebook
+# Load model dan scaler
+model = joblib.load("mentalhealth_model.pkl")
+scaler = joblib.load("scaler.pkl")
 
 st.title("Prediksi Gangguan Kesehatan Mental")
 
@@ -13,21 +14,19 @@ with st.form("mental_health_form"):
     gender = st.selectbox("Jenis Kelamin", ["Laki-laki", "Perempuan"])
     age = st.number_input("Usia", min_value=10, max_value=100, step=1)
     cgpa = st.number_input("IPK", min_value=0.0, max_value=4.0, format="%.2f")
-    sleepinghours = st.number_input("Jam Tidur per Hari", min_value=0, max_value=24, step=1)
-    stress = st.slider("Skor Stres (1-10)", 1, 10)
-    anxiety = st.slider("Skor Kecemasan (1-10)", 1, 10)
+    sleep_quality = st.slider("Kualitas Tidur (1 = Buruk, 5 = Sangat Baik)", 1, 5)
+    academic_pressure = st.slider("Tekanan Akademik (1 = Rendah, 5 = Tinggi)", 1, 5)
+    social_support = st.slider("Dukungan Sosial (1 = Lemah, 5 = Kuat)", 1, 5)
+    phone_usage = st.number_input("Jam Penggunaan HP per Hari", min_value=0.0, max_value=24.0, format="%.1f")
 
     submit = st.form_submit_button("Prediksi")
 
 if submit:
-    # Proses encoding gender
     gender_num = 1 if gender.lower() == "laki-laki" else 0
+    features = np.array([[gender_num, age, cgpa, sleep_quality, academic_pressure, social_support, phone_usage]])
 
-    # Susun fitur
-    features = np.array([[gender_num, age, cgpa, sleepinghours, stress, anxiety]])
-
-    # Prediksi
-    prediction = model.predict(features)[0]
+    features_scaled = scaler.transform(features)
+    prediction = model.predict(features_scaled)[0]
 
     st.subheader("Hasil Prediksi:")
     if prediction == 1:
