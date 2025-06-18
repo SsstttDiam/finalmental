@@ -32,6 +32,6 @@ if submit:
 
     st.subheader("Hasil Prediksi:")
     if prediction == 1:
-        st.error("⚠️ Responden berpotensi mengalami depresi.")
+        st.error("Responden berpotensi mengalami depresi.")
     else:
-        st.success("✅ Responden tidak menunjukkan indikasi depresi.")
+        st.success("Responden tidak menunjukkan indikasi depresi.")
